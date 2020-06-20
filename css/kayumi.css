@@ -19,6 +19,19 @@ a:hover {
   color: black;
 }
 
+.alignCenter {
+  text-align: center;
+}
+.alignRight {
+  text-align: right;
+}
+
+.fontLL {
+  font-size: 150%;
+}
+.fontL {
+  font-size: 125%;
+}
 .fontS {
   font-size: 75%;
 }
@@ -30,21 +43,11 @@ a:hover {
   margin-top: 60px;
 }
 
-.contentBox {
-  padding-top: 12px;
-  background-color: rgb(255, 244, 224);
-  border-radius: 10px;
-}
-
-#headerBox {
-  height: 70px;
-  /* line-height: 100px; */
-  text-align: center;
-  background-color: rgb(255, 231, 187);
+.relativeBox {
   position: relative;
 }
 
-.headLinkTab {
+.centerBox {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -53,6 +56,70 @@ a:hover {
   -webkit-transform: translate(-50%, -50%);
   -o-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
+}
+.rightBox {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.contentBox {
+  padding-top: 12px;
+  background-color: rgb(255, 244, 224);
+  border-radius: 10px;
+}
+.contentBoxWhite {
+  padding-top: 12px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+#logo1 {
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  background-color: rgb(253, 116, 62);
+  animation-name: logoAnime;
+  animation-duration: 3s;
+  animation-timing-function: ease;
+  animation-delay: 0s;
+  animation-iteration-count: infinite;
+  left: 35%;
+}
+#logo2 {
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgb(255, 244, 224);
+  border-radius: 30px;
+  background-color: rgb(255, 231, 187);
+  left: 65%;
+}
+@keyframes logoAnime {
+  0% {
+    /* width: 50px;
+    height: 50px; */
+    background-color: rgb(253, 116, 62);
+  }
+  100% {
+    /* width: 5px;
+    height: 5px; */
+    background-color: rgb(255, 231, 187);
+  }
+}
+
+#headerBox {
+  height: 70px;
+  text-align: center;
+  background-color: rgb(255, 231, 187);
+  position: relative;
+}
+
+.headLinkTab {
   width: 80%;
   height: 30px;
   line-height: 30px;
@@ -69,15 +136,8 @@ a:hover {
   box-shadow: 0 0 rgb(145, 139, 128);
 }
 
-#btnLogin {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
+#loginBtn {
+  width: auto;
 }
 
 #menuOpenBox {
@@ -134,9 +194,36 @@ a:hover {
   border-radius: 30px;
 }
 
+#footerBox {
+  height: 70px;
+  text-align: center;
+  background-color: rgb(255, 231, 187);
+  position: relative;
+}
+
+#inquiryBtn {
+  width: auto;
+}
+
+#inquiryModalContent {
+  background-color: rgb(255, 244, 224);
+}
+
 @media (max-width:576px) {
   body {
     min-width: auto;
+  }
+
+  #logo2 {
+    left: 55%;
+  }
+
+  #loginBtn {
+    width: 90%;
+  }
+
+  #inquiryBtn {
+    width: 90%;
   }
 
   #profileImg {
