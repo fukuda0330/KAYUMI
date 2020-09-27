@@ -3,6 +3,11 @@
 function GetTopView() {
   $html = '
   <div class="row creviceRow">
+    <div class="col">
+      総訪問してくれた数：[ <span id="visitCount"></span> ]名様
+    </div>
+  </div>
+  <div class="row creviceRow">
     <div class="col-sm-2 d-none d-sm-block">&nbsp;</div>
     <div class="col-sm-8 col-12 contentBox">
       <p>
@@ -13,7 +18,9 @@ function GetTopView() {
         <br>
         私もそうですが、日々悩みながら、人の目線にも不安を抱きながら過ごされている事、お察し致します。<br>
         <br>
-        このサイトでは、皮膚炎によって悩んでいる方同士で悩みを共有したり、アドバイスをしたりしながら、少しでも症状を改善していこうという事を目的としています。
+        このサイトでは、皮膚炎によって悩んでいる方同士で悩みを共有したり、アドバイスをしたりしながら、少しでも症状を改善していこうという事を目的としています。<br>
+        <br>
+        安心して悩みを共有してみてください^^
       </p>
     </div>
     <div class="col-sm-2 d-none d-sm-block fontS">

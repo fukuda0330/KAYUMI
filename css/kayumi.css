@@ -79,6 +79,13 @@ a:hover {
   border-radius: 10px;
 }
 
+.pageRow {
+  height: 75vh;
+}
+
+#topLogoLink {
+  border-color: rgb(255, 231, 187);
+}
 #logo1 {
   width: 50px;
   height: 50px;
@@ -119,10 +126,10 @@ a:hover {
   position: relative;
 }
 
-.headLinkTab {
+.headLinkTab:not([disabled]) {
   width: 80%;
   height: 30px;
-  line-height: 30px;
+  /* line-height: 30px; */
   background-color: rgb(255, 244, 224);
   padding-left: 8px;
   padding-right: 8px;
@@ -131,7 +138,10 @@ a:hover {
   box-shadow: 0 5px rgb(167, 148, 117);
   transition: box-shadow 0.2s, top 0.2s;
 }
-.headLinkTab:hover {
+.headLinkTab[disabled] {
+  cursor: auto;
+}
+.headLinkTab:hover:not([disabled]) {
   top: 57%;
   box-shadow: 0 0 rgb(145, 139, 128);
 }
@@ -179,7 +189,9 @@ a:hover {
 }
 .spMenuLink {
   width: 100%;
-  height: 100%;
+  height: 69px;
+  background-color: rgb(255, 244, 224);
+  border: none;
 }
 
 #profileImgBox {
@@ -209,6 +221,78 @@ a:hover {
   background-color: rgb(255, 244, 224);
 }
 
+#txtMailAddress {
+  font-size: 16px;
+}
+
+#txtInquiryContent {
+  font-size: 16px;
+}
+
+
+
+#worriesRow {
+  height: 75vh;
+}
+
+#worriesTalkingBox {
+  overflow-y: scroll;
+}
+#worriesTalkingBox > div {
+  height: 70vh;
+}
+
+#worriesTalkFormBox {
+  overflow-y: scroll;
+}
+#worriesTalkFormBox > div {
+  height: 70vh;
+}
+
+.worriesTalkContent {
+  background-color: rgb(255, 244, 224);
+  border-radius: 20px;
+  padding: 1vw;
+}
+
+.sendInfo {
+  width: 100%;
+}
+
+#noticeToast {
+  width: 300px;
+  height: 100px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: -1;
+}
+.successToast {
+  background-color: rgb(56, 247, 56);
+}
+.errorToast {
+  background-color: red;
+  color: white;
+}
+
+#togglePostRow {
+  display: none;
+}
+
+.worriesTalkButtonsOfPostPage {
+  display: none;
+}
+
+#worriesTalkPostClose {
+  cursor: pointer;
+}
+
+#worriesTalkLoading {
+  margin-top: 20px;
+  display: none;
+}
+
+
 @media (max-width:576px) {
   body {
     min-width: auto;
@@ -229,5 +313,29 @@ a:hover {
   #profileImg {
     /* width: 100%;
     height: auto; */
+  }
+
+
+
+  #worriesRow {
+    height: auto;
+  }
+
+  #worriesTalkingBox {
+    overflow-y: auto;
+  }
+  #worriesTalkingBox > div {
+    height: auto;
+  }
+
+  .worriesTalkContent {
+    padding: 3vw;
+  }
+
+  #worriesTalkFormBox {
+    overflow-y: auto;
+  }
+  #worriesTalkFormBox > div {
+    height: auto;
   }
 }
