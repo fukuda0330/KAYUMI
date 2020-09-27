@@ -53,6 +53,15 @@
       $("#noticeToast").toast({autohide:true, delay:5000});
       $("#noticeToast").toast("show");
 
+<?php   if ($isLogin) { ?>
+
+      // 管理者へログインされた事を通知
+      $(function(){
+        $.post("./Models/Api/LINE/LineNotify.php", {"accessMessage": "KAYUMI にログインがありました。"});
+      });
+
+<?php   } ?>
+
 <?php } else { ?>
     
       $("#noticeToast").css("z-index", "-1");
@@ -90,7 +99,7 @@
 <?php if ($isLogin) { ?>
         <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="worriesTalkRoomLink">悩み語り部屋</button></div>
         <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" disabled>痒み日誌</button></div>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" disabled>管理者の経験</button></div><!-- name="experienceLink" -->
+        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="experienceLink">管理者の経験</button></div>
         <div class="col-sm-5 col-6"></div>
 <?php } else { ?>
         <div class="col-sm-6 d-none d-sm-block relativeBox"><span class="centerBox">ログイン後に各メニューが表示されます^^</span></div>
@@ -132,7 +141,7 @@
             <div class="col">
 
 <?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" disabled><!-- name="experienceLinkSp" -->
+              <button type="submit" class="spMenuLink" name="experienceLinkSp">
                 <div class="">管理者の経験</div>
               </button>
 <?php } ?>

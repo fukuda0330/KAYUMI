@@ -4,7 +4,7 @@ function GetTopView() {
   $html = '
   <div class="row creviceRow">
     <div class="col">
-      総訪問してくれた数：[ <span id="visitCount"></span> ]名様
+      総訪問してくれた数：[ <span id="visitCount"><span id="visitCountDot_1" class="visitCountDot">.</span><span id="visitCountDot_2" class="visitCountDot">.</span><span id="visitCountDot_3" class="visitCountDot">.</span></span> ]名様
     </div>
   </div>
   <div class="row creviceRow">

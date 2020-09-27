@@ -19,6 +19,9 @@ let reloaded = false;
 // デバイスの種類を格納
 let device = "";
 
+// 訪問者数カウントドッドループ切断
+let isVisitCountDotLoop = true;
+
 // メイン処理
 $(async function() {
   // 初期化処理
@@ -396,8 +399,15 @@ function CreateWorriesButtonHtml(isBtnWorriesTalkChildShow, worriesNo) {
 // 総訪問してくれた数表示
 function ShowVisitCount() {
   return new Promise(resolve => {
+    // 訪問者数カウントドッドアニメーション
+    AnimationVisitCountDot();
+
     database.ref("WorriesVisitCount").on("value", function(visitCount) {
       $("#visitCount").text(visitCount.val());
+
+      // 訪問者数カウントドッド非表示
+      HiddenVisitCountDot();
+      isVisitCountDotLoop = false;
 
       resolve();
     });
@@ -448,6 +458,39 @@ function HiddenReloadIcon() {
        resolve(); 
     });
   });
+}
+
+// 訪問者数カウントドッドアニメーション
+function AnimationVisitCountDot() {
+  let dotCount = 1;
+  setTimeout(async function() {
+    while (true) {
+      await ShowVisitCountDot(dotCount);
+      dotCount++;
+
+      if (dotCount > 3) {
+        HiddenVisitCountDot();
+        dotCount = 1;
+      }
+
+      if (!isVisitCountDotLoop)
+        break;
+    }
+  }, 1);
+}
+// 訪問者数カウントドッド表示
+function ShowVisitCountDot(dotCount) {
+  return new Promise(resolve => {
+    $("#visitCountDot_" + dotCount).fadeIn(100, function() {
+      resolve();
+    });
+  });
+}
+// 訪問者数カウントドッド非表示
+function HiddenVisitCountDot() {
+  $("#visitCountDot_1").fadeOut(100);
+  $("#visitCountDot_2").fadeOut(100);
+  $("#visitCountDot_3").fadeOut(100);
 }
 
 // 改行コードをHTML用の改行に変換する
