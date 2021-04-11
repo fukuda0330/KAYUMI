@@ -305,6 +305,13 @@ a:hover {
   border-radius: 20px;
 }
 
+.showIsLogin {
+  display: none !important;
+}
+.showNoLogin {
+  display: none !important;
+}
+
 
 @media (max-width:576px) {
   body {

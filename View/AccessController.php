@@ -65,25 +65,21 @@ function GetHtml($pageName) {
 
 // ログイン処理
 $loginHash = '';
-$isLogin = false;
+$isInputLoginInfo = false;
 if (isset($_POST['loginSend'])) {
-  $__Login = new Login();
-  
-  if ($__Login->CheckPassword($_POST['txtLoginPassword'])) {
-    $loginHash = $__Login::HASH;
-    $isLogin = true;
-  }
-
   $actionType = 'loginSend';
 }
-else if (!empty($_POST['loginHashHidden'])) {
-  $__Login = new Login();
-  
-  if ($__Login->CheckHash($_POST['loginHashHidden'])) {
-    $loginHash = $__Login::HASH;
-    $isLogin = true;
-  }
+if (isset($_POST['signUp'])) {
+  $actionType = 'signUp';
 }
+// else if (!empty($_POST['loginHashHidden'])) {
+//   $__Login = new Login();
+  
+//   if ($__Login->CheckHash($_POST['loginHashHidden'])) {
+//     $loginHash = $__Login::HASH;
+//     $isLogin = true;
+//   }
+// }
 
 class Login {
   public const HASH = '$2y$10$lIGG1QPJLUHjCDe14k..He90QeO7PPUKTcSte0dkvpuv.yRnrcS/a';
@@ -99,6 +95,10 @@ class Login {
   public function CheckHash($hash) {
     // ハッシュ値チェック開始
     return $hash === self::HASH;
+  }
+
+  public function IsInputLoginInfo($loginMailAddress, $loginPassword) {
+    return (empty($loginMailAddress) === false && empty($loginPassword) === false);
   }
 }
 

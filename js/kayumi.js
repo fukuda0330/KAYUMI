@@ -24,6 +24,8 @@ let device = "";
 // 訪問者数カウントドッドループ切断
 let isVisitCountDotLoop = true;
 
+let isLogin = false;
+
 // メイン処理
 $(async function() {
   // 初期化処理
@@ -138,12 +140,12 @@ function EventSendWorriesTalk() {
 
     // 入力チェック
     if ($("#txtWorriesContent").val().length === 0) {
-      ShowErrorToast($(this).text() + "内容を入力してください。");
+      ShowErrorToast($(this).text() + "内容を入力してください。", "投稿エラー");
       $("#txtWorriesContent").focus();
       return;
     }
     if ($("#worriesSendName").val().length === 0) {
-      ShowErrorToast($(this).text() + "する際の名前を入力してください。");
+      ShowErrorToast($(this).text() + "する際の名前を入力してください。", "投稿エラー");
       $("#worriesSendName").focus();
       return;
     }
@@ -168,12 +170,12 @@ function EventSendWorriesTalk() {
 
     // 入力チェック
     if ($("#txtWorriesContent").val().length === 0) {
-      ShowErrorToast($(this).text() + "内容を入力してください。");
+      ShowErrorToast($(this).text() + "内容を入力してください。", "投稿エラー");
       $("#txtWorriesContent").focus();
       return;
     }
     if ($("#worriesSendName").val().length === 0) {
-      ShowErrorToast($(this).text() + "する際の名前を入力してください。");
+      ShowErrorToast($(this).text() + "する際の名前を入力してください。", "投稿エラー");
       $("#worriesSendName").focus();
       return;
     }
@@ -240,16 +242,76 @@ function InitializeForm() {
   $("#togglePostRow").css("display", "none");
 }
 
-// エラー用通知を表示する
-function ShowErrorToast(errorMessage) {
+// 正常処理用通知を表示する
+function ShowSuccessToast(successMessage, toastContent) {
   // エラーメッセージを表示する
-  $($("#noticeToast").children(".toast-body")[0]).text(errorMessage);
-  $($("#noticeToast").children(".toast-header")[0]).addClass("errorToast");
-  $($($("#noticeToast").children(".toast-header")[0]).children(".mr-auto")[0]).text("投稿エラー");
+  $($("#noticeToast").children(".toast-body")[0]).text(successMessage);
+  $($("#noticeToast").children(".toast-header")[0]).addClass("successToast");
+  $($($("#noticeToast").children(".toast-header")[0]).children(".mr-auto")[0]).text(toastContent);
 
   $("#noticeToast").css("z-index", "10");
   $("#noticeToast").toast({autohide:true, delay:5000});
   $("#noticeToast").toast("show");
+}
+
+// エラー用通知を表示する
+function ShowErrorToast(errorMessage, toastContent) {
+  // エラーメッセージを表示する
+  $($("#noticeToast").children(".toast-body")[0]).text(errorMessage);
+  $($("#noticeToast").children(".toast-header")[0]).addClass("errorToast");
+  $($($("#noticeToast").children(".toast-header")[0]).children(".mr-auto")[0]).text(toastContent);
+
+  $("#noticeToast").css("z-index", "10");
+  $("#noticeToast").toast({autohide:true, delay:5000});
+  $("#noticeToast").toast("show");
+}
+
+function SwitchLoginContent() {
+  $(".showIsLogin").css({"cssText":"display: " + ((isLogin === true) ? "inline" : "none") + " !important"});
+  $(".showNoLogin").css({"cssText":"display: " + ((isLogin === false) ? "inline" : "none") + " !important"});
+}
+
+function SignIn(mailAddress, password) {
+  return new Promise(function(resolve) {
+    firebase.auth().signInWithEmailAndPassword(mailAddress, password)
+    .then((user) => {
+      resolve(true);
+    })
+    .catch((error) => {
+      resolve(false);
+    });
+  });
+}
+
+function SignUp(mailAddress, password) {
+  return new Promise(function(resolve) {
+    firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
+    .then((user) => {
+      resolve(true);
+    })
+    .catch((error) => {
+      resolve(false);
+    });
+  });
+}
+
+function IsLoginClient() {
+  return new Promise(function(resolve) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user && firebase.auth().currentUser) {
+        resolve(true);
+        
+      } else {
+        // let regexpTopUrl1 = /.*\/KAYUMI\/index.php$/ig;
+        // let regexpTopUrl2 = /.*\/KAYUMI\/$/ig;
+        // if (String(window.location).match(regexpTopUrl1) === null && String(window.location).match(regexpTopUrl2) === null) {
+        //   window.location = "/KAYUMI/index.php";
+        // }
+        
+        resolve(false);
+      }
+    });
+  });
 }
 
 // 最大No取得

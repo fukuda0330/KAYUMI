@@ -9,13 +9,6 @@
   $pageHtml = GetHtml($pageName);
   // ページタイトル取得
   $pageTitle = GetTitle($pageName);
-
-  if (!$isLogin) {
-    // ページコンテンツ取得
-    $pageHtml = GetTopView();
-    // ページタイトル取得
-    $pageTitle = TITLE_TOP;
-  }
 ?>
 
 <!DOCTYPE html>
@@ -46,52 +39,82 @@
   <script type="text/javascript" src="./js/kayumi.js"></script>
 
   <script type="text/javascript">
-    $(function() {
+    $(async function() {
+
 // ログイン処理が行われる場合
 <?php if ($actionType === 'loginSend') { ?>
-<?php   $noticeMessage = ($isLogin) ? 'ログインできました！(^^)' : 'パスワードが違うみたいですm(_ _)m'; ?>
-    
-      $("#noticeToast").css("z-index", "10");
-      $("#noticeToast").toast({autohide:true, delay:5000});
-      $("#noticeToast").toast("show");
 
-<?php   if ($isLogin) { ?>
+      // ログイン処理を行う
+      isLogin = await SignIn('<?php echo $_POST['txtLoginMailAddress']; ?>', '<?php echo $_POST['txtLoginPassword']; ?>')
+      if (isLogin === true) {
+        // ログイン成功
+        ShowSuccessToast('ログインできました！(^^)', 'ログイン結果');
+      } else {
+        // ログイン失敗
+        ShowErrorToast('メールアドレス、またはパスワードが違うみたいですm(_ _)m', 'ログイン結果');
+      }
 
-      // 管理者へログインされた事を通知
-      $(function(){
-        $.post("./Models/Api/LINE/LineNotify.php", {"accessMessage": "KAYUMI にログインがありました。"});
-      });
+      if (isLogin === true) {
 
-<?php   } ?>
+        // 管理者へログインされた事を通知
+        $(function(){
+          $.post("./Models/Api/LINE/LineNotify.php", {"accessMessage": "KAYUMI にログインがありました。"});
+        });
+
+      }
+
+<?php } else if ($actionType === 'signUp') { ?>
+
+      // サインアップ処理を行う
+      isLogin = await SignUp('<?php echo $_POST['txtLoginMailAddress']; ?>', '<?php echo $_POST['txtLoginPassword']; ?>')
+      if (isLogin === true) {
+        // サインアップ成功
+        ShowSuccessToast('アカウントを作成できました！(^^)', 'アカウント作成結果');
+      } else {
+        // サインアップ失敗
+        ShowErrorToast('アカウント作成時に何らかのエラーが発生しましたm(_ _)m お問い合わせにてお知らせください。', 'アカウント作成結果');
+      }
+
+      if (isLogin === true) {
+
+        // 管理者へサインアップされた事を通知
+        $(function(){
+          $.post("./Models/Api/LINE/LineNotify.php", {"accessMessage": "KAYUMI にサインアップがありました。"});
+        });
+
+      }
 
 <?php } else if ($actionType === 'inquirySend') { ?>
-<?php   $noticeMessage = ($isSuccessSendMail) ? 'お問合せが完了しました！' : 'お問合せに失敗しました。'; ?>
 
-      $("#noticeToast").css("z-index", "10");
-      $("#noticeToast").toast({autohide:true, delay:5000});
-      $("#noticeToast").toast("show");
+<?php   if ($isSuccessSendMail) { ?>
+      ShowSuccessToast('お問合せが完了しました！', 'お問合せ結果');
+<?php   } else { ?>
+      ShowErrorToast('お問合せに失敗しました。', 'お問合せ結果');
+<?php   } ?>
 
 <?php } else { ?>
     
       $("#noticeToast").css("z-index", "-1");
 
+      isLogin = await IsLoginClient();
+
 <?php } ?>
+
+      SwitchLoginContent();
     });
   </script>
 </head>
-<body>
+<body onLoad="">
 
   <!-- 通知ポップアップ -->
   <div id="noticeToast" class="toast">
-    <div class="toast-header <?php echo ($isLogin || $isSuccessSendMail) ? 'successToast' : 'errorToast'; ?>">
-      <strong class="mr-auto"><?php if ($actionType === 'loginSend') echo 'ログイン結果'; if ($actionType === 'inquirySend') echo 'お問合せ結果'; ?></strong>
+    <div class="toast-header">
+      <strong class="mr-auto"></strong>
       <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
-    <div class="toast-body">
-      <?php echo $noticeMessage; ?>
-    </div>
+    <div class="toast-body"></div>
   </div>
 
   <form method="POST" action="" name="mainForm">
@@ -105,15 +128,12 @@
           </button>
         </div>
 
-<?php if ($isLogin) { ?>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="worriesTalkRoomLink">悩み語り部屋</button></div>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" disabled>痒み日誌</button></div>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="experienceLink">管理者の経験</button></div>
-        <div class="col-sm-5 col-6"></div>
-<?php } else { ?>
-        <div class="col-sm-6 d-none d-sm-block relativeBox"><span class="centerBox">ログイン後に各メニューが表示されます^^</span></div>
-        <div class="col-sm-5 col-6"><div id="loginBtn" class="btn btn-light centerBox" data-toggle="modal" data-target="#loginModal">ログイン</div></div>
-<?php } ?>
+        <div class="col-sm-2 d-none d-sm-block showIsLogin"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="worriesTalkRoomLink">悩み語り部屋</button></div>
+        <div class="col-sm-2 d-none d-sm-block showIsLogin"><button type="submit" class="btn btn-gray headLinkTab centerBox" disabled>痒み日誌</button></div>
+        <div class="col-sm-2 d-none d-sm-block showIsLogin"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="experienceLink">管理者の経験</button></div>
+        <div class="col-sm-5 col-6 showIsLogin"></div>
+        <div class="col-sm-6 d-none d-sm-block relativeBox showNoLogin"><span class="centerBox">ログイン後に各メニューが表示されます^^</span></div>
+        <div class="col-sm-5 col-6 showNoLogin"><div id="loginBtn" class="btn btn-light centerBox" data-toggle="modal" data-target="#loginModal">ログイン</div></div>
 
         <div id="menuOpenBox" class="col-2 d-block d-sm-none"><span id="menuOpen">&gt;</span></div>
       </div>
@@ -125,36 +145,24 @@
           </div>
           <div class="row spMenuRow">
             <div class="col">
-
-<?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" name="worriesTalkRoomLinkSp">
+              <button type="submit" class="spMenuLink showIsLogin" name="worriesTalkRoomLinkSp">
                 <div class="">悩み語り部屋</div>
               </button>
-<?php } else { ?>
-              <div class="">ログイン後に各メニューが表示されます^^</div>
-<?php } ?>
+              <div class="showNoLogin">ログイン後に各メニューが表示されます^^</div>
             </div>
           </div>
           <div class="row spMenuRow">
             <div class="col">
-
-<?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" disabled>
+              <button type="submit" class="spMenuLink showIsLogin" disabled>
                 <div class="">痒み日誌</div>
               </button>
-<?php } ?>
-
             </div>
           </div>
           <div class="row spMenuRow">
             <div class="col">
-
-<?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" name="experienceLinkSp">
+              <button type="submit" class="spMenuLink showIsLogin" name="experienceLinkSp">
                 <div class="">管理者の経験</div>
               </button>
-<?php } ?>
-
             </div>
           </div>
           <div id="profileImgBox" class="row creviceRowL fontS">
@@ -259,14 +267,23 @@
           <form method="POST" action="">
             <div class="container-fluid">
               <div class="form-row creviceRow">
-                <label for="txtLoginPassword">KAYUMIコミュニティへのログインパスワードを入力してください</label>
+                <label for="txtLoginMailAddress">メールアドレスを入力してください</label>
               </div>
               <div class="form-row">
-                <input type="text" id="txtLoginPassword" class="form-control focusScrollPosition" name="txtLoginPassword" required>
+                <input type="mail" id="txtLoginMailAddress" class="form-control focusScrollPosition" name="txtLoginMailAddress" required>
+              </div>
+              <div class="form-row creviceRow">
+                <label for="txtLoginPassword">ログインパスワードを入力してください</label>
+              </div>
+              <div class="form-row">
+                <input type="password" id="txtLoginPassword" class="form-control" name="txtLoginPassword" required>
               </div>
               <div class="form-row creviceRow alignRight">
-                <div class="col-12">
+                <div class="col-6">
                   <button type="submit" id="loginSend" class="btn btn-light" name="loginSend">ログイン</button>
+                </div>
+                <div class="col-6">
+                  <button type="submit" id="signUp" class="btn btn-light" name="signUp">アカウント作成</button>
                 </div>
               </div>
             </div>
