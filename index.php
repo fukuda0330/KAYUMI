@@ -1,4 +1,6 @@
 <?php
+  $actionType = "";
+
   // ページアクセス用コントローラー
   require './View/AccessController.php';
   require './Models/Api/Mail/SendMail.php';
@@ -30,7 +32,7 @@
   <link rel="stylesheet" href="./css/bootstrap.min.css">
   <link rel="stylesheet" href="./css/kayumi.css">
 
-  <script src="https://www.gstatic.com/firebasejs/3.5.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
 
   <script type="text/javascript" src="./js/XXXXX.js"></script>
   <script type="text/javascript" src="./js/XXX.js"></script>
@@ -46,7 +48,7 @@
   <script type="text/javascript">
     $(function() {
 // ログイン処理が行われる場合
-<?php if (isset($_POST['loginSend'])) { ?>
+<?php if ($actionType === 'loginSend') { ?>
 <?php   $noticeMessage = ($isLogin) ? 'ログインできました！(^^)' : 'パスワードが違うみたいですm(_ _)m'; ?>
     
       $("#noticeToast").css("z-index", "10");
@@ -62,6 +64,13 @@
 
 <?php   } ?>
 
+<?php } else if ($actionType === 'inquirySend') { ?>
+<?php   $noticeMessage = ($isSuccessSendMail) ? 'お問合せが完了しました！' : 'お問合せに失敗しました。'; ?>
+
+      $("#noticeToast").css("z-index", "10");
+      $("#noticeToast").toast({autohide:true, delay:5000});
+      $("#noticeToast").toast("show");
+
 <?php } else { ?>
     
       $("#noticeToast").css("z-index", "-1");
@@ -74,8 +83,8 @@
 
   <!-- 通知ポップアップ -->
   <div id="noticeToast" class="toast">
-    <div class="toast-header <?php echo ($isLogin) ? 'successToast' : 'errorToast'; ?>">
-      <strong class="mr-auto">ログイン結果</strong>
+    <div class="toast-header <?php echo ($isLogin || $isSuccessSendMail) ? 'successToast' : 'errorToast'; ?>">
+      <strong class="mr-auto"><?php if ($actionType === 'loginSend') echo 'ログイン結果'; if ($actionType === 'inquirySend') echo 'お問合せ結果'; ?></strong>
       <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -222,7 +231,7 @@
                 <label for="txtInquiryContent">お問合せ内容を入力してください</label>
               </div>
               <div class="form-row">
-                <textarea id="txtInquiryContent" class="form-control focusScrollPosition" name="txtInquiryContent" rows="10" placeholder="例：&#13;&#10;・お問合せ目的&#13;&#10;・このサイトをどう利用したいか&#13;&#10;etc..." required></textarea>
+                <textarea id="txtInquiryContent" class="form-control focusScrollPosition" name="txtInquiryContent" rows="10" placeholder="お問合せ内容は任意入力です"></textarea>
               </div>
               <div class="form-row creviceRow alignRight">
                 <div class="col-12">

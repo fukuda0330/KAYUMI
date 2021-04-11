@@ -1,12 +1,16 @@
 <?php
 
+$isSuccessSendMail = false;
+
 if (isset($_POST['inquirySend'])) {
   $_SendMail = new SendMail();
   // お問合せ送信
   if ($_SendMail->Inquiry($_POST))
-    echo '送信成功しました!!!';
+    $isSuccessSendMail = true;
   else
-    echo '送信失敗しました...';
+    $isSuccessSendMail = false;
+
+  $actionType = 'inquirySend';
 }
   
 

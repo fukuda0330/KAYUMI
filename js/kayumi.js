@@ -1,10 +1,12 @@
 // Firebase オプション設定
-let firebaseConfig = {
-  apiKey: "AIzaSyAi7ax" + XXXXXXXXXXXXXXXXXXX + "a4Vt" + XXXXXXXXXXXX + "4zMA",
+var firebaseConfig = {
+  apiKey: "AIzaSy" + XXXXXXXXXXXXXXXXXXX + "yAooK" + XXXXXXXXXXXX + "8nohpsI",
   authDomain: "n" + XX + "aseapp.com",
   databaseURL: "ht" + XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX + "o.com",
-  storageBucket: "",
-  messagingSenderId: "988" + XXXXXXXXXXX + "8"
+  projectId: "non" + XXXX + "7",
+  storageBucket: "non" + XXXXXX + "pot.com",
+  messagingSenderId: "988" + XXXXXXXXXXX + "8",
+  appId: "1:9887" + X + "6d7aafa66cb"
 };
 
 // firebase 初期化

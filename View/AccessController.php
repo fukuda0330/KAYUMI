@@ -73,6 +73,8 @@ if (isset($_POST['loginSend'])) {
     $loginHash = $__Login::HASH;
     $isLogin = true;
   }
+
+  $actionType = 'loginSend';
 }
 else if (!empty($_POST['loginHashHidden'])) {
   $__Login = new Login();
