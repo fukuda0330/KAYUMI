@@ -45,7 +45,7 @@ $(async function() {
   EventCloseWorriesTalkPost();
 
   // 総訪問してくれた数表示
-  await ShowVisitCount();
+  // await ShowVisitCount();
 
   // 訪問カウントアップ
   AddVisitCount();
