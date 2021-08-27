@@ -1,19 +1,14 @@
 // Firebase オプション設定
-var firebaseConfig = {
-  apiKey: "AIzaSy" + XXXXXXXXXXXXXXXXXXX + "yAooK" + XXXXXXXXXXXX + "8nohpsI",
-  authDomain: "n" + XX + "aseapp.com",
-  databaseURL: "ht" + XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX + "o.com",
-  projectId: "non" + XXXX + "7",
-  storageBucket: "non" + XXXXXX + "pot.com",
-  messagingSenderId: "988" + XXXXXXXXXXX + "8",
-  appId: "1:9887" + X + "6d7aafa66cb"
+const firebaseConfig = {
+  apiKey: "AIzaSyBdPYZ319FU03UxMQHOwz2P8GL_396O5fw",
+  authDomain: "kayumi-89de6.firebaseapp.com",
+  databaseURL: "https://kayumi-89de6-default-rtdb.firebaseio.com",
+  projectId: "kayumi-89de6",
+  storageBucket: "kayumi-89de6.appspot.com",
+  messagingSenderId: "1046227678389",
+  appId: "1:1046227678389:web:47f3d82b340e68ee9abafc",
+  measurementId: "G-TJQ03GS11L"
 };
-
-// firebase 初期化
-firebase.initializeApp(firebaseConfig);
-
-// DB処理格納
-let database = firebase.database();
 
 // リロード判定
 let reloaded = false;
@@ -23,6 +18,9 @@ let device = "";
 
 // 訪問者数カウントドッドループ切断
 let isVisitCountDotLoop = true;
+
+// ログインユーザー情報
+let signInUser = null;
 
 // メイン処理
 $(async function() {
@@ -52,12 +50,36 @@ $(async function() {
 });
 
 // 初期化処理
-function Initialize() {
+async function Initialize() {
+
+  // firebase 初期化
+  firebase.initializeApp(firebaseConfig);
+
+  // ログイン状態の保持を「セッション」単位とする
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
   // リロードチェックを行う
   ChkReload();
 
   // デバイス種別を判定する
   SetDeviceKind();
+
+  // ログイン判定を行う
+  $(".isLoginElement").css({"cssText": "display: none !important;"});
+  $(".isLogoutElement").css({"cssText": "display: none !important;"});
+  if (await IsSignIn()) {
+    if (device == "pc") {
+      $(".isLoginElement").css({"cssText": "display: block !important;"});
+    } else {
+      $(".isLoginElement").css("display", "block");
+    }
+  } else {
+    if (device == "pc") {
+      $(".isLogoutElement").css({"cssText": "display: block !important;"});
+    } else {
+      $(".isLogoutElement").css("display", "block");
+    }
+  }
 }
 
 // スマホ用ハンバーガーメニュー開閉イベント定義
@@ -210,7 +232,7 @@ async function RegistWorriesTalk(isReply) {
       worriesNo = await GetMaxWorriesNo() + 1;
     }
 
-    database.ref("WorriesTalkGroup/Worries-" + worriesNo + "/Talk-" + talkNo).set(
+    firebase.database().ref("WorriesTalkGroup/Worries-" + worriesNo + "/Talk-" + talkNo).set(
       {
         Text: $("#txtWorriesContent").val(),
         Name: $("#worriesSendName").val(),
@@ -263,7 +285,7 @@ function GetMaxNo(val) {
 // 最大WorriesNo取得
 function GetMaxWorriesNo() {
   return new Promise(resolve => {
-    database.ref("WorriesTalkGroup").on("value", function(worries) {
+    firebase.database().ref("WorriesTalkGroup").on("value", function(worries) {
       let worriesVal = worries.val();
       let maxWorriesNo = GetMaxNo(worriesVal);
 
@@ -274,7 +296,7 @@ function GetMaxWorriesNo() {
 // 最大TalkNo取得
 function GetMaxTalkNo(worriesNo) {
   return new Promise(resolve => {
-    database.ref("WorriesTalkGroup/Worries-" + worriesNo).on("value", function(talks) {
+    firebase.database().ref("WorriesTalkGroup/Worries-" + worriesNo).on("value", function(talks) {
       let talksVal = talks.val();
       let maxTalkNo = GetMaxNo(talksVal);
 
@@ -289,7 +311,7 @@ function ShowWorriesTalkList() {
     // リロードアイコン表示
     await ShowReloadIcon();
 
-    database.ref("WorriesTalkGroup").once("value", async function(worriesTalk) {
+    firebase.database().ref("WorriesTalkGroup").once("value", async function(worriesTalk) {
       // 悩み語りボックスに入れるHTML
       let worriesHtml = '<div class="container-fluid">';
       // 悩み全体の値リスト
@@ -399,22 +421,22 @@ function CreateWorriesButtonHtml(isBtnWorriesTalkChildShow, worriesNo) {
 }
 
 // 総訪問してくれた数表示
-function ShowVisitCount() {
-  return new Promise(resolve => {
-    // 訪問者数カウントドッドアニメーション
-    AnimationVisitCountDot();
+// function ShowVisitCount() {
+//   return new Promise(resolve => {
+//     // 訪問者数カウントドッドアニメーション
+//     AnimationVisitCountDot();
 
-    database.ref("WorriesVisitCount").on("value", function(visitCount) {
-      $("#visitCount").text(visitCount.val());
+//     firebase.database().ref("WorriesVisitCount").on("value", function(visitCount) {
+//       $("#visitCount").text(visitCount.val());
 
-      // 訪問者数カウントドッド非表示
-      HiddenVisitCountDot();
-      isVisitCountDotLoop = false;
+//       // 訪問者数カウントドッド非表示
+//       HiddenVisitCountDot();
+//       isVisitCountDotLoop = false;
 
-      resolve();
-    });
-  });
-}
+//       resolve();
+//     });
+//   });
+// }
 // 総訪問してくれた数カウントアップ
 function AddVisitCount() {
   return new Promise(resolve => {
@@ -432,7 +454,7 @@ function AddVisitCount() {
         !reloaded) {
       
       // 訪問数カウントアップ
-      database.ref("WorriesVisitCount").set(parseInt($("#visitCount").text()) + 1);
+      // firebase.database().ref("WorriesVisitCount").set(parseInt($("#visitCount").text()) + 1);
 
       // 管理者へアクセスされた事を通知
       $(function(){
@@ -533,4 +555,158 @@ function SetDeviceKind() {
   else {
       device = "pc";
   }
+}
+
+// メールアドレスでのログイン処理を行う
+function SignIn(inputSignInUserAddress, inputSignInUserPassword) {
+  if (inputSignInUserAddress && inputSignInUserPassword) {
+
+    firebase.auth().signInWithEmailAndPassword(inputSignInUserAddress, inputSignInUserPassword)
+    .then(async (signInUserInfo) => {
+      if (await IsSignIn()) {
+
+        // 管理者へメールアドレスによりログインされた旨を通知
+        // if (DEVELOP_MODE === false) {
+        //   $(function() {
+        //     $.post('./Api/LINE/LineNotify.php', {'accessMessage': 'メールアドレスによるログインがありました。'});
+        //   });
+        // }
+        
+        // ログイン時の処理を行う
+        window.location.reload();
+
+      }
+    })
+    .catch();
+
+  }
+}
+// アカウント作成処理を行う
+function SignUp(inputSignInUserAddress, inputSignInUserPassword) {
+  if (inputSignInUserAddress && inputSignInUserPassword) {
+
+    firebase.auth().createUserWithEmailAndPassword(inputSignInUserAddress, inputSignInUserPassword)
+    .then(async (signInUserInfo) => {
+      if (await IsSignIn()) {
+
+        // ログイン時の処理を行う
+        window.location.reload();
+      
+      }
+    })
+    .catch();
+
+  }
+}
+
+// Googleアカウントでのログイン処理を行う
+function SignInGoogle() {
+  let provider = new firebase.auth.GoogleAuthProvider();
+
+  // Googleのポップアップによりログインを行う
+  SignInPopup(provider);
+
+  // Googleのログインページへリダイレクトし、ログインを行う
+  // firebase.auth().signInWithRedirect(provider);
+
+  // 管理者へGoogleによりログインされた旨を通知
+  // if (DEVELOP_MODE === false) {
+  //   $(function() {
+  //     $.post('./Api/LINE/LineNotify.php', {'accessMessage': 'Googleによるログインがありました。'});
+  //   });
+  // }
+}
+// Twitterアカウントでのログイン処理を行う
+function SignInTwitter() {
+  let provider = new firebase.auth.TwitterAuthProvider();
+
+  // Twitterのポップアップによりログインを行う
+  SignInPopup(provider);
+
+  // Twitterのログインページへリダイレクトし、ログインを行う
+  // firebase.auth().signInWithRedirect(provider);
+
+  // 管理者へTwitterによりログインされた旨を通知
+  // if (DEVELOP_MODE === false) {
+  //   $(function() {
+  //     $.post('./Api/LINE/LineNotify.php', {'accessMessage': 'Twitterによるログインがありました。'});
+  //   });
+  // }
+}
+// Facebookアカウントでのログイン処理を行う
+function SignInFacebook() {
+  let provider = new firebase.auth.FacebookAuthProvider();
+
+  // Twitterのポップアップによりログインを行う
+  SignInPopup(provider);
+
+  // Facebookのログインページへリダイレクトし、ログインを行う
+  // firebase.auth().signInWithRedirect(provider);
+
+  // 管理者へFacebookによりログインされた旨を通知
+  // if (DEVELOP_MODE === false) {
+  //   $(function() {
+  //     $.post('./Api/LINE/LineNotify.php', {'accessMessage': 'Facebookによるログインがありました。'});
+  //   });
+  // }
+}
+// Githubアカウントでのログイン処理を行う
+function SignInGithub() {
+  let provider = new firebase.auth.GithubAuthProvider();
+
+  // Githubのポップアップによりログインを行う
+  SignInPopup(provider);
+
+  // Githubのログインページへリダイレクトし、ログインを行う
+  // firebase.auth().signInWithRedirect(provider);
+
+  // 管理者へGitHubによりログインされた旨を通知
+  // if (DEVELOP_MODE === false) {
+  //   $(function() {
+  //     $.post('./Api/LINE/LineNotify.php', {'accessMessage': 'Githubによるログインがありました。'});
+  //   });
+  // }
+}
+
+// OAuthポップアップによるログイン
+function SignInPopup(provider) {
+  firebase.auth()
+  .signInWithPopup(provider)
+  .then(async (result) => {
+    if (await IsSignIn()) {
+
+      // ログイン時の処理を行う
+      window.location.reload();
+    
+    }
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+// ログイン判定を行う
+function IsSignIn() {
+  return new Promise(resolve => {
+
+    let isSignIn = false;
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        signInUser = user;
+        isSignIn = true;
+      }
+
+      resolve(isSignIn);
+    });
+
+  });
+}
+
+// ログアウト処理を行う
+function SignOut() {
+  firebase.auth().signOut()
+  .then(() => {
+    $("#mainForm").submit();
+  })
+  .catch();
 }

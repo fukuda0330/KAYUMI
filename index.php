@@ -9,13 +9,6 @@
   $pageHtml = GetHtml($pageName);
   // ページタイトル取得
   $pageTitle = GetTitle($pageName);
-
-  if (!$isLogin) {
-    // ページコンテンツ取得
-    $pageHtml = GetTopView();
-    // ページタイトル取得
-    $pageTitle = TITLE_TOP;
-  }
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +31,8 @@
   <link rel="apple-touch-icon" href="./img/kayumi_topimage.JPG">
 
   <link rel="shortcut icon" href="./img/favicon.ico">
+
+  <link rel="stylesheet" href="./css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/bootstrap.min.css">
   <link rel="stylesheet" href="./css/kayumi.css">
@@ -59,20 +54,10 @@
     $(function() {
 // ログイン処理が行われる場合
 <?php if ($actionType === 'loginSend') { ?>
-<?php   $noticeMessage = ($isLogin) ? 'ログインできました！(^^)' : 'パスワードが違うみたいですm(_ _)m'; ?>
     
       $("#noticeToast").css("z-index", "10");
       $("#noticeToast").toast({autohide:true, delay:5000});
       $("#noticeToast").toast("show");
-
-<?php   if ($isLogin) { ?>
-
-      // 管理者へログインされた事を通知
-      $(function(){
-        $.post("./Models/Api/LINE/LineNotify.php", {"accessMessage": "KAYUMI にログインがありました。"});
-      });
-
-<?php   } ?>
 
 <?php } else if ($actionType === 'inquirySend') { ?>
 <?php   $noticeMessage = ($isSuccessSendMail) ? 'お問合せが完了しました！' : 'お問合せに失敗しました。'; ?>
@@ -104,7 +89,7 @@
     </div>
   </div>
 
-  <form method="POST" action="" name="mainForm">
+  <form method="POST" action="" name="mainForm" id="mainForm">
 
     <div class="container-fluid">
       <div id="headerBox" class="row">
@@ -115,17 +100,15 @@
           </button>
         </div>
 
-<?php if ($isLogin) { ?>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="worriesTalkRoomLink">悩み語り部屋</button></div>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" disabled>痒み日誌</button></div>
-        <div class="col-sm-2 d-none d-sm-block"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="experienceLink">管理者の経験</button></div>
-        <div class="col-sm-5 col-6"></div>
-<?php } else { ?>
-        <div class="col-sm-6 d-none d-sm-block relativeBox"><span class="centerBox">ログイン後に各メニューが表示されます^^</span></div>
-        <div class="col-sm-5 col-6"><div id="loginBtn" class="btn btn-light centerBox" data-toggle="modal" data-target="#loginModal">ログイン</div></div>
-<?php } ?>
+        <div class="col-sm-2 d-none d-sm-block isLoginElement"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="worriesTalkRoomLink">悩み語り部屋</button></div>
+        <div class="col-sm-2 d-none d-sm-block isLoginElement"><button type="submit" class="btn btn-gray headLinkTab centerBox" disabled>痒み日誌</button></div>
+        <div class="col-sm-2 d-none d-sm-block isLoginElement"><button type="submit" class="btn btn-gray headLinkTab centerBox" name="experienceLink">管理者の経験</button></div>
+        <div class="col-sm-5 col-7 isLoginElement"><div id="logoutBtn" class="btn btn-light centerBox" onClick="SignOut();">ログアウト</div></div>
 
-        <div id="menuOpenBox" class="col-2 d-block d-sm-none"><span id="menuOpen">&gt;</span></div>
+        <div class="col-sm-6 d-none d-sm-block relativeBox isLogoutElement"><span class="centerBox">ログイン後に各メニューが表示されます^^</span></div>
+        <div class="col-sm-5 col-7 isLogoutElement"><div id="loginBtn" class="btn btn-light centerBox" data-toggle="modal" data-target="#loginModal">ログイン</div></div>
+
+        <div id="menuOpenBox" class="col-1 d-block d-sm-none"><span id="menuOpen">&gt;</span></div>
       </div>
       <div id="spMenu">
         <div class="container-fluid">
@@ -135,36 +118,24 @@
           </div>
           <div class="row spMenuRow">
             <div class="col">
-
-<?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" name="worriesTalkRoomLinkSp">
+              <button type="submit" class="spMenuLink isLoginElement" name="worriesTalkRoomLinkSp">
                 <div class="">悩み語り部屋</div>
               </button>
-<?php } else { ?>
-              <div class="">ログイン後に各メニューが表示されます^^</div>
-<?php } ?>
+              <div class="isLogoutElement">ログイン後に各メニューが表示されます^^</div>
             </div>
           </div>
           <div class="row spMenuRow">
             <div class="col">
-
-<?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" disabled>
+              <button type="submit" class="spMenuLink isLoginElement" disabled>
                 <div class="">痒み日誌</div>
               </button>
-<?php } ?>
-
             </div>
           </div>
           <div class="row spMenuRow">
             <div class="col">
-
-<?php if ($isLogin) { ?>
-              <button type="submit" class="spMenuLink" name="experienceLinkSp">
+              <button type="submit" class="spMenuLink isLoginElement" name="experienceLinkSp">
                 <div class="">管理者の経験</div>
               </button>
-<?php } ?>
-
             </div>
           </div>
           <div id="profileImgBox" class="row creviceRowL fontS">
@@ -191,13 +162,12 @@
       <div class="row creviceRow d-block d-sm-none">
         <img id="mainImage" src="./img/kayumi_topimage.JPG">
       </div>
-      <!-- <div id="mainBackImage"></div> -->
 
 <?php echo $pageHtml; ?>
 
       <div id="footerBox" class="row creviceRow">
         <div class="col-8">
-          <span id="copyLight" class="centerBox">&copy; Fukuda 2020</span>
+          <span id="copyLight" class="centerBox">&copy; Fukuda 2021</span>
         </div>
         <div class="col-4">
           <div id="inquiryBtn" class="btn btn-light centerBox" data-toggle='modal' data-target='#inquiryModal'>お問合せ</div>
@@ -225,16 +195,6 @@
         <div class="modal-body">
           <form method="POST" action="">
             <div class="container-fluid">
-              <div class="form-row">
-                <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" id="rdoIWantToKnowPassword" class="custom-control-input" name="inquiryContentType" value="パスワードが知りたい" checked required>
-                  <label class="custom-control-label" for="rdoIWantToKnowPassword">パスワードが知りたい</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" id="rdoOther" class="custom-control-input" name="inquiryContentType" value="その他" required>
-                  <label class="custom-control-label" for="rdoOther">その他</label>
-                </div>
-              </div>
               <div class="form-row creviceRow">
                 <label for="txtMailAddress">返信が欲しいメールアドレスを入力してください</label>
               </div>
@@ -245,7 +205,7 @@
                 <label for="txtInquiryContent">お問合せ内容を入力してください</label>
               </div>
               <div class="form-row">
-                <textarea id="txtInquiryContent" class="form-control focusScrollPosition" name="txtInquiryContent" rows="10" placeholder="お問合せ内容は任意入力です"></textarea>
+                <textarea id="txtInquiryContent" class="form-control focusScrollPosition" name="txtInquiryContent" rows="10" placeholder="" required></textarea>
               </div>
               <div class="form-row creviceRow alignRight">
                 <div class="col-12">
@@ -272,17 +232,28 @@
         <div class="modal-body">
           <form method="POST" action="">
             <div class="container-fluid">
-              <div class="form-row creviceRow">
-                <label for="txtLoginPassword">KAYUMIコミュニティへのログインパスワードを入力してください</label>
+              <div class="form-group">
+                <input type="email" class="form-control" id="sign-in-address" placeholder="メールアドレス">
               </div>
-              <div class="form-row">
-                <input type="text" id="txtLoginPassword" class="form-control focusScrollPosition" name="txtLoginPassword" required>
+              <div class="form-group">
+                <input type="password" class="form-control" id="sign-in-password" placeholder="パスワード">
               </div>
-              <div class="form-row creviceRow alignRight">
-                <div class="col-12">
-                  <button type="submit" id="loginSend" class="btn btn-light" name="loginSend">ログイン</button>
-                </div>
+              <div class="form-group">
+                <button type="button" id="sign-up-button" class="btn btn-outline-secondary box-sizing-common" onClick="SignUp($('#sign-in-address').val(), $('#sign-in-password').val());"><i class="far fa-envelope fa-fw"></i>&nbsp;アカウント作成</button>
+                <button type="button" id="sign-in-button" class="btn btn-outline-secondary box-sizing-common" onClick="SignIn($('#sign-in-address').val(), $('#sign-in-password').val());"><i class="far fa-envelope fa-fw"></i>&nbsp;ログイン</button>
               </div>
+              <!-- <div class="form-group crecive-box-l">
+                <button type="button" id="google-sign-in-button" class="btn btn-outline-secondary o-auth-sign-in-button" onClick="SignInGoogle();"><i class="fab fa-google fa-fw"></i>&nbsp;Googleでログイン</button>
+              </div> -->
+              <!-- <div class="form-group">
+                <button type="button" id="twitter-sign-in-button" class="btn btn-outline-secondary o-auth-sign-in-button" onClick="SignInTwitter();"><i class="fab fa-twitter fa-fw"></i>&nbsp;Twitterでログイン</button>
+              </div>
+              <div class="form-group">
+                <button type="button" id="facebook-sign-in-button" class="btn btn-outline-secondary o-auth-sign-in-button" onClick="SignInFacebook();"><i class="fab fa-facebook fa-fw"></i>&nbsp;Facebookでログイン</button>
+              </div>
+              <div class="form-group">
+                <button type="button" id="github-sign-in-button" class="btn btn-outline-secondary o-auth-sign-in-button" onClick="SignInGithub();"><i class="fab fa-github fa-fw"></i>&nbsp;Githubでログイン</button>
+              </div> -->
             </div>
           </form>
         </div>

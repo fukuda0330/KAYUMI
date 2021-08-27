@@ -29,7 +29,6 @@ class SendMail {
 
       $subject = '【KAYUMI COMMUNITYからのお問合せ】';
       $body = "*********************************************************\n\n"
-              . '■お問合せ種別：' . $inputs['inquiryContentType'] . "\n"
               . '■返信先メールアドレス：' . $inputs['txtMailAddress'] . "\n"
               . '■お問合せ内容：' . "\n" . $inputs['txtInquiryContent'] . "\n\n"
               . "*********************************************************\n";

@@ -52,7 +52,7 @@ function GetTopView() {
         <span class="fontLL">お知らせ</span>
         <div class="container-fluid">
           <div class="row">
-            <div class="col-12 alignCenter">コミュニティに入りたい方は、お問合せからパスワードを聞いてください^^</div>
+            <div class="col-12 alignCenter"></div>
           </div>
         </div>
       </p>
