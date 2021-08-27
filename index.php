@@ -35,7 +35,7 @@
   <!-- ホーム画面に表示されるアプリ名 -->
   <meta name="apple-mobile-web-app-title" content="KAYUMI">
   <!-- ホーム画面に表示されるアプリアイコン -->
-  <link rel="apple-touch-icon" href="./img/favicon.ico">
+  <link rel="apple-touch-icon" href="./img/kayumi_topimage.JPG">
 
   <link rel="shortcut icon" href="./img/favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
@@ -188,6 +188,10 @@
           </div>
         </div>
       </div>
+      <div class="row creviceRow d-block d-sm-none">
+        <img id="mainImage" src="./img/kayumi_topimage.JPG">
+      </div>
+      <!-- <div id="mainBackImage"></div> -->
 
 <?php echo $pageHtml; ?>
 

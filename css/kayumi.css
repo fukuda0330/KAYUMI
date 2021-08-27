@@ -210,6 +210,21 @@ a:hover {
   border-radius: 30px;
 }
 
+#mainImage {
+  width: 100%;
+}
+#mainBackImage {
+  background-image: url('../img/kayumi_topimage.JPG');
+  background-size: cover;
+  background-position: center;
+  /* height: 100%; */
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
 #footerBox {
   height: 70px;
   text-align: center;
